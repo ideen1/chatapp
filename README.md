@@ -1,6 +1,6 @@
 # About
 
-This is a bsic chat system that allows to users to chat with each other. It supports:
+This is a basic chat system written in React that allows to users to chat with each other. It supports:
     • User availability status
     • Instant message pushing(messages will update on both users screens as soon as they are sent)
     • AWS Cognito for user authentication
