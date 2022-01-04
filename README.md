@@ -3,11 +3,12 @@
 This is a bsic chat system that allows to users to chat with each other. It supports:
     • User availability status
     • Instant message pushing(messages will update on both users screens as soon as they are sent)
-    • 
+    • AWS Cognito for user authentication
+    • AWS GraphQL for message storage
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project includes code from the Amplify Getting Started Tutorial available at []
 
-## Available Scripts
+## Running Development Server
 
 In the project directory, you can run:
 
