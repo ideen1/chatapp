@@ -6,7 +6,7 @@ This is a basic chat system written in React that allows to users to chat with e
     • AWS Cognito for user authentication
     • AWS GraphQL for message storage
 
-This project includes code from the Amplify Getting Started Tutorial available at []
+This project includes code from the Amplify Getting Started Tutorial available at [https://docs.amplify.aws/start/q/integration/react/](https://docs.amplify.aws/start/q/integration/react/).
 
 ## Running Development Server
 
