@@ -1,4 +1,5 @@
 /* src/App.js */
+//Include all required dependancies
 import React, { useEffect, useState, useRef, PubSub } from 'react';
 import Amplify, { API, graphqlOperation } from 'aws-amplify';
 import { createMessage, createStatus, updateStatus } from './graphql/mutations';
@@ -15,20 +16,26 @@ import awsExports from "./aws-exports";
 
 
 Amplify.configure(awsExports);
-
-
-
+//App Start
 const App = () => {
+  //SET INTIAL STATES
+  //Authentication States
   const [authState, setAuthState] = useState();
   const [user, setUser] = useState();
+  const initialState = { user: '', message: '' }
+  //Messaging States
+  const [formState, setFormState] = useState([])
+  const [messages, setMessages] = useState([])
+  const [statuses, setStatus] = useState([])
 
- 
+  // Always scroll to bottom when new message sent/received
   const ViewBottom = () => {
     const bottomRef = useRef();
     useEffect(() => bottomRef.current.scrollIntoView());
     return <div ref={bottomRef}/>
   }
 
+  //Initialize the Application on page load
   useEffect(() => {
     fetchMessages();
     fetchStatus();
@@ -42,28 +49,13 @@ const App = () => {
   }, [])
 
 
-
-  const initialState = { user: '', message: '' }
-
-  const [formState, setFormState] = useState([])
-  const [messages, setMessages] = useState([])
-  const [statuses, setStatus] = useState([])
-
-  async function fetchStatus() {
-    try {
-      const statusData = await API.graphql(graphqlOperation(listStatuses))
-      const statuses = statusData.data.listStatuses.items
-      setStatus(statuses)
-      statusHeartBeat();
-    } catch (err) { console.log(err) }
-  }
-
+  //Updates Form State with message
   function setInput(key, value) {
 
     setFormState({ [key]: value, ['user']: user.username, ['type']: "message"})
     statusHeartBeat();
   }
-
+  //Retrieves all messages from backend
   async function fetchMessages() {
     try {
       const messageData = await API.graphql(graphqlOperation(messageSorted))
@@ -71,6 +63,8 @@ const App = () => {
       setMessages(messages)
     } catch (err) { console.log('error loading message') }
   }
+
+  //Sends message to backend message database
   async function sendMessage() {
     try {
       if (!formState.message ) return
@@ -84,6 +78,7 @@ const App = () => {
     }
   }
 
+  //Subscribe to message Database and call fetchMessages() for every new message
   const msgSubscription = API.graphql(graphqlOperation(onCreateMessage)
   ).subscribe({
     next: (data) => {
@@ -91,49 +86,55 @@ const App = () => {
     },
     error: error => console.warn(error)
   });
-  /*
-  const statusSubscription = API.graphql(graphqlOperation(onUpdateStatus)
-  ).subscribe({
-    next: (data) => {
-      fetchStatus();
-    },
-    error: error => console.warn(error)
-  });*/
 
-async function statusHeartBeat(){
-  try{
-    await API.graphql(graphqlOperation(updateStatus, {input: {id: user.username}}))
-  } catch (err) {
-    console.log('error updating status:', err)
+
+//AVAILABILITY STATUS FUNCTIONS:
+
+  //Retrieves last active time for all users from backend
+  async function fetchStatus() {
+    try {
+      const statusData = await API.graphql(graphqlOperation(listStatuses))
+      const statuses = statusData.data.listStatuses.items
+      setStatus(statuses)
+      statusHeartBeat();
+    } catch (err) { console.log(err) }
   }
-  
-}
 
-function getCurrentTime(){
- var currentTime = new Date();
- currentTime.setMinutes(currentTime.getMinutes() - 5) 
-
- return currentTime.toISOString();
-
-}
-
-  //subscription.unsubscribe();
-
-  return authState === AuthState.SignedIn && user ? (
+  //Function to update user last active time in database
+  async function statusHeartBeat(){
+    try{
+      await API.graphql(graphqlOperation(updateStatus, {input: {id: user.username}}))
+    } catch (err) {
+      console.log('error updating status:', err)
+    }
     
+  }
+
+  //Function used to get the Current Time - 5 minutes
+  function getCurrentTime(){
+  var currentTime = new Date();
+  currentTime.setMinutes(currentTime.getMinutes() - 5) 
+
+  return currentTime.toISOString();
+
+  }
+
+// Check if user logged in and dislay appropriate screen
+  return authState === AuthState.SignedIn && user ? (
+    //Continue to display chat window and welcome message if logged in
     <div style={styles.container}>
       <p>Chat:</p>
       <p>Welcome <b>{user.username}</b> !</p>
       
       <div style={styles.statusDiv}>
-
+      {/* Itterate through users and display status*/}
       {statuses.map((status, index) => (
         <div key={status.id ? status.id : index}>
 
               {status.id === user.username
               ? <div></div> // Do not display anything for own user status
               : [
-                  status.updatedAt > getCurrentTime()
+                  status.updatedAt > getCurrentTime() // Compare whether user last active time is within 5 minutes
                       ? <span><span style={styles.active}>{status.id} </span>Active</span>
                       : <span><span style={styles.inactive}>{status.id} </span>Not Active</span>
               ]
@@ -146,11 +147,15 @@ function getCurrentTime(){
         </div>
       <div style={styles.chatbox}>
       {
+      /* Itterate through messages and display them */
         messages.map((message, index) => (
           <div key={message.id ? message.id : index} style={styles.message}>
+            {/* Display different color for messages if self user has sent message or another user */}
             { message.user === user.username ? (
+              /* Self User */
               <p style={styles.THISuser}><span style={styles.space}></span>{message.user} (ME)</p>
             ) : (
+              /* Another User */
               <p style={styles.OTHERuser}><span style={styles.space}></span>{message.user}</p>
             )}
             <p style={styles.messageBody}>{message.message}</p>
@@ -158,6 +163,7 @@ function getCurrentTime(){
           </div>
         ))
       }
+      
       <ViewBottom/>
       </div>
       <hr style={{borderColor: "#000000", height: .5, width: "100%"} }/>
@@ -175,6 +181,7 @@ function getCurrentTime(){
     </div>
 
     ) : (
+      //If not signed in, display log in screen
       <AmplifyAuthenticator>
       <AmplifySignIn slot="sign-in" hideSignUp>
   
@@ -183,6 +190,7 @@ function getCurrentTime(){
   )
 }
 
+//Styles for HTML
 const styles = {
   container: { width: 400, border: '1px solid black', margin: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 20},
   chatbox: { width: "99%", border: '1px solid grey', overflow: "scroll", height: 500},
