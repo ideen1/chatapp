@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "chatapp",
+    "serviceName": "AppSync",
+    "gqlSchemaPath": "/Users/ideen/Documents/chatapp/react-amplified/amplify/backend/api/chatapp/schema.graphql",
+    "defaultAuthType": {
+      "mode": "API_KEY",
+      "expirationTime": 7
+    }
+  }
+}
