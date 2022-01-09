@@ -10,7 +10,7 @@ This project includes code from the Amplify Getting Started Tutorial available a
 
 Preview:
 
-![picture alt](http://via.placeholder.com/200x150 "Title is optional")
+![picture alt](https://raw.githubusercontent.com/ideen1/chatapp/main/Demo.png)
 
 
 ## Running Development Server
