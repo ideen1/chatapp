@@ -8,6 +8,11 @@ This is a basic chat system written in React that allows to users to chat with e
 
 This project includes code from the Amplify Getting Started Tutorial available at [https://docs.amplify.aws/start/q/integration/react/](https://docs.amplify.aws/start/q/integration/react/).
 
+Preview:
+
+![picture alt](http://via.placeholder.com/200x150 "Title is optional")
+
+
 ## Running Development Server
 
 In the project directory, you can run:
